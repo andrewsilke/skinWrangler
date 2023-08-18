@@ -1448,21 +1448,5 @@ respecting the max influences</string>
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>copyBTN</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>pasteBTN</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>201</x>
-     <y>263</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>254</x>
-     <y>263</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
 </ui>
