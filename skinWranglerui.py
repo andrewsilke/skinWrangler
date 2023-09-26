@@ -198,7 +198,7 @@ class skinWrangler(QtWidgets.QDialog):
         clusters = cmds.ls(typ="skinCluster")
         for c in clusters:
             geom = cmds.skinCluster(c, q=True, g=True)
-            if geom == None:  # can find deformers not skin clusters. 
+            if geom is None:  # can find deformers not skin clusters. 
                 continue
             for g in geom:
                 if g == skinShape or g == skinShapeWithPath:
