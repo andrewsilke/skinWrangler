@@ -19,12 +19,14 @@ Unzip this folder to a valid Maya scripts directory example:
 
 username/Documents/maya/scripts/
 
-For example the correct path would be: 
+Note you must rename the folder "skinWrangler-master" to "skinWrangler".
+
+For example, the correct path would be: 
 username/Documents/maya/scripts/skinWrangler/  (skinWrangler_ui.py and other files here)
 
 Start or restart Maya. 
 
-Then in Maya run the following code in python to open the tool:
+Then in Maya run the code below in Python to open the tool, or create a shelf with the following. 
 
 
 # ---- Python Code ----
