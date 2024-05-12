@@ -13,21 +13,24 @@ https://github.com/chrisevans3d/skinWrangler
 https://www.youtube.com/watch?v=b__ABAKjDRI
 
 
----- Support 2019 - 2023 -----
+---- Support 2019 - 2025 -----
 This modified version simply adds support for PySide (UI) changes in 2020+ and also supports Python 3 in Maya 2022 and above.  No other changes have been made.
 
+Contributors: Chris Evans, Andrew Silke, David Sparrow, Keen Foong, Le Simo
 
 ---- Install ----
 Unzip this folder to a valid Maya scripts directory example:
 
 username/Documents/maya/scripts/
 
-For example the correct path would be: 
+Note you must rename the folder "skinWrangler-master" to "skinWrangler".
+
+For example, the correct path would be:
 username/Documents/maya/scripts/skinWrangler/  (skinWrangler_ui.py and other files here)
 
-Start or restart Maya. 
+Start or restart Maya.
 
-Then in Maya run the following code in python to open the tool:
+Then in Maya run the code below in Python to open the tool, or create a shelf with the following.
 
 
 # ---- Python Code ----

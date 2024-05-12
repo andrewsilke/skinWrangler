@@ -13,23 +13,24 @@ from skinWrangler import skinWranglerui
 skinWranglerWindow = skinWranglerui.show()
 '''
 
+#_________________________________________________________________
+# April 2024 update:                  UPDATED to work in Maya2025+
+#
+# dropped: Qt4-Support ( removed Qt.py from package )
+# removed: *.ui -File
+#_________________________________________________________________
+
 import os, sys
 
-from skinWrangler.Qtpy.Qt import QtGui, QtWidgets
+try:
+    from PySide6 import QtCore, QtGui, QtWidgets
+except:
+    from PySide2 import QtCore, QtGui, QtWidgets
+
 
 from skinWrangler import skinWrangler_ui
 import maya.cmds as cmds
-import maya.OpenMayaUI as openMayaUI
 import maya.mel as mel
-
-mayaApi = cmds.about(api=True)
-if mayaApi >= 201700:
-    import shiboken2 as shiboken
-else:
-    import shiboken
-
-if sys.version_info > (3,):
-    long = int
 
 
 def show():
@@ -45,10 +46,10 @@ def show():
 
 
 def getMayaWindow():
-    ptr = openMayaUI.MQtUtil.mainWindow()
-    if ptr is not None:
-        return shiboken.wrapInstance(long(ptr), QtWidgets.QWidget)
-
+    """get maya MainWinddow without using shiboken"""
+    app = QtWidgets.QApplication.instance()
+    MayaMainWin = next(w for w in app.topLevelWidgets() if w.objectName()=='MayaWindow')
+    return MayaMainWin
 
 ########################################################################
 ## SKIN WRANGLER
@@ -81,8 +82,6 @@ class skinWrangler(QtWidgets.QDialog):
         self.ui = skinWrangler_ui.Ui_skinWranglerDlg()
         self.ui.setupUi(self)
         self.setWindowTitle(self.title)
-
-        wName = openMayaUI.MQtUtil.fullName(long(shiboken.getCppPointer(self)[0]))
 
         ## Connect UI
         ########################################################################
@@ -128,7 +127,7 @@ class skinWrangler(QtWidgets.QDialog):
         self.ui.rigidShellsBtn.clicked.connect(self.rigidShellsFn)
 
         self.scriptJobNum = cmds.scriptJob(e=['SelectionChanged', self.refreshUI], kws=1)
-        print('skinWrangler initialized as', wName, 'scriptJob:', self.scriptJobNum)
+        print('skinWrangler initialized scriptJob-Num:', self.scriptJobNum)
         self.refreshUI()
 
     def closeEvent(self, e):
