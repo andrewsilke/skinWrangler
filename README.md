@@ -16,7 +16,7 @@ https://www.youtube.com/watch?v=b__ABAKjDRI
 ---- Support 2019 - 2025 -----
 This modified version simply adds support for PySide (UI) changes in 2020+ and also supports Python 3 in Maya 2022 and above.  No other changes have been made.
 
-Contributors: Chris Evans, Andrew Silke, David Sparrow, Keen Foong, Le Simo
+Contributors: Chris Evans (creator), Andrew Silke, David Sparrow, Keen Foong, Simon Leykamm
 
 ---- Install ----
 Unzip this folder to a valid Maya scripts directory example:
