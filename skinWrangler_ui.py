@@ -8,25 +8,61 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-#_______________________________________________________________________
+# _______________________________________________________________________
 # April 2024 update:                        UPDATED to work in Maya2025+
 #
 # dropped: Qt4-Support ( removed Qt.py from package )
 # removed: *.ui -File
 # fonts now scale by maya_dpi
-#_______________________________________________________________________
+# _______________________________________________________________________
+
+import os
 
 try:
     from PySide6.QtCore import *
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
+    from PySide6 import QtWidgets
+    from PySide6 import QtGui
 except:
     from PySide2.QtCore import *
     from PySide2.QtGui import *
     from PySide2.QtWidgets import *
+    from PySide2 import QtWidgets
+    from PySide2 import QtGui
 
 import maya.cmds as cmds
-dpi = cmds.mayaDpiSetting(query=True, realScaleValue=True)
+
+# DPI Scaling ----------------------------------
+def currentScreen():
+    """Gets current screen.
+
+    :rtype: :class:`QRect`
+    """
+    return QtWidgets.QApplication.screenAt(QtGui.QCursor.pos())
+
+def dpiMult():
+    # todo: Replace with a Host agnostic version
+    #  Maya has a different way of getting DPI compared to QT where it doesn't modify QT
+    # or at least it's undocumented.
+    scaleFactor = os.getenv("ZOO_QT_SCALE_FACTOR")
+    if scaleFactor is not None:
+        return float(scaleFactor)
+    try:
+        dpi = cmds.mayaDpiSetting(query=True, realScaleValue=True)
+    # AttributeError is raised on OSX because mayaDPISetting doesn't exist, ImportError for non maya
+    except (ImportError, AttributeError):
+        screen = currentScreen()
+        logicalY = 96
+        if screen is not None:
+            logicalY = screen.logicalDotsPerInch()
+        dpi = max(1, float(logicalY) / float(96))
+    os.environ["ZOO_QT_SCALE_FACTOR"] = str(dpi)
+    return dpi
+
+dpi = dpiMult()
+
+# Skin Wrangler Dialog ----------------------------------
 
 class Ui_skinWranglerDlg(object):
 
@@ -42,7 +78,7 @@ class Ui_skinWranglerDlg(object):
         self.groupBox.setObjectName(u"groupBox")
         font = self.groupBox.font()
         font.setBold(True)
-        font.setWeight(QFont.Bold) # 75
+        font.setWeight(QFont.Bold)  # 75
         self.groupBox.setFont(font)
         self.verticalLayout_2 = QVBoxLayout(self.groupBox)
         self.verticalLayout_2.setSpacing(1)
@@ -55,7 +91,7 @@ class Ui_skinWranglerDlg(object):
         self.msh.setObjectName(u"msh")
         font1 = self.msh.font()
         font.setBold(True)
-        font.setWeight(QFont.Bold) # 75
+        font.setWeight(QFont.Bold)  # 75
         self.msh.setFont(font1)
 
         self.gridLayout_2.addWidget(self.msh, 0, 0, 1, 1)
@@ -77,8 +113,8 @@ class Ui_skinWranglerDlg(object):
         font2 = self.mshLBL.font()
         font2.setBold(False)
 
-        font2.setWeight(QFont.Normal) # 50 Medium , Normal, Light <---
-        
+        font2.setWeight(QFont.Normal)  # 50 Medium , Normal, Light <---
+
         self.mshLBL.setFont(font2)
 
         self.gridLayout_2.addWidget(self.mshLBL, 1, 0, 1, 1)
@@ -102,7 +138,6 @@ class Ui_skinWranglerDlg(object):
         self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.gridLayout_2.addItem(self.horizontalSpacer_3, 0, 3, 1, 1)
-
 
         self.verticalLayout_2.addLayout(self.gridLayout_2)
 
@@ -137,7 +172,6 @@ class Ui_skinWranglerDlg(object):
 
         self.horizontalLayout.addWidget(self.selLoopBTN)
 
-
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
         self.selPointsEffectedBTN = QPushButton(self.groupBox)
@@ -145,7 +179,6 @@ class Ui_skinWranglerDlg(object):
         self.selPointsEffectedBTN.setFont(font1)
 
         self.verticalLayout_2.addWidget(self.selPointsEffectedBTN)
-
 
         self.verticalLayout.addWidget(self.groupBox)
 
@@ -208,7 +241,6 @@ class Ui_skinWranglerDlg(object):
 
         self.gridLayout_3.addWidget(self.skinNormalCMB, 0, 4, 1, 1)
 
-
         self.verticalLayout_3.addLayout(self.gridLayout_3)
 
         self.horizontalLayout_2 = QHBoxLayout()
@@ -231,7 +263,6 @@ class Ui_skinWranglerDlg(object):
         self.weightFullBTN.setFont(font1)
 
         self.horizontalLayout_2.addWidget(self.weightFullBTN)
-
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
 
@@ -328,9 +359,7 @@ class Ui_skinWranglerDlg(object):
 
         self.horizontalLayout_8.addWidget(self.copyBTN)
 
-
         self.gridLayout.addLayout(self.horizontalLayout_8, 2, 0, 1, 1)
-
 
         self.verticalLayout_3.addLayout(self.gridLayout)
 
@@ -347,7 +376,6 @@ class Ui_skinWranglerDlg(object):
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer)
 
-
         self.verticalLayout_3.addLayout(self.horizontalLayout_3)
 
         self.horizontalLayout_6 = QHBoxLayout()
@@ -355,7 +383,7 @@ class Ui_skinWranglerDlg(object):
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.filterBTN = QPushButton(self.groupBox_2)
         self.filterBTN.setObjectName(u"filterBTN")
-        self.filterBTN.setMaximumSize(QSize(dpi*55, dpi*20))
+        self.filterBTN.setMaximumSize(QSize(dpi * 55, dpi * 20))
 
         self.horizontalLayout_6.addWidget(self.filterBTN)
 
@@ -365,22 +393,21 @@ class Ui_skinWranglerDlg(object):
 
         self.horizontalLayout_6.addWidget(self.filterLINE)
 
-
         self.verticalLayout_3.addLayout(self.horizontalLayout_6)
 
         self.jointLST = QTreeWidget(self.groupBox_2)
         __qtreewidgetitem = QTreeWidgetItem()
-#         __qtreewidgetitem.setFont(1, font1);
+        #         __qtreewidgetitem.setFont(1, font1);
         __qtreewidgetitem.setText(0, u"JOINT")
-#         __qtreewidgetitem.setFont(0, font1);
+        #         __qtreewidgetitem.setFont(0, font1);
         self.jointLST.setHeaderItem(__qtreewidgetitem)
         __qtreewidgetitem1 = QTreeWidgetItem(self.jointLST)
-#         __qtreewidgetitem1.setFont(1, font2);
-#         __qtreewidgetitem1.setFont(0, font);
+        #         __qtreewidgetitem1.setFont(1, font2);
+        #         __qtreewidgetitem1.setFont(0, font);
         self.jointLST.setObjectName(u"jointLST")
         font4 = self.jointLST.font()
         font4.setBold(True)
-        font4.setWeight(QFont.Bold) # 75
+        font4.setWeight(QFont.Bold)  # 75
         self.jointLST.setFont(font4)
         self.jointLST.setLineWidth(1)
         self.jointLST.setSelectionMode(QAbstractItemView.ExtendedSelection)
@@ -416,7 +443,6 @@ class Ui_skinWranglerDlg(object):
 
         self.horizontalLayout_4.addWidget(self.longNamesCHK)
 
-
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
 
         self.horizontalLayout_10 = QHBoxLayout()
@@ -443,9 +469,7 @@ class Ui_skinWranglerDlg(object):
 
         self.horizontalLayout_10.addWidget(self.showLocksCHK)
 
-
         self.verticalLayout_3.addLayout(self.horizontalLayout_10)
-
 
         self.verticalLayout.addWidget(self.groupBox_2)
 
@@ -453,11 +477,11 @@ class Ui_skinWranglerDlg(object):
         self.tabs.setObjectName(u"tabs")
         self.tabs.setEnabled(True)
         # self.tabs.setMaximumSize(QSize(16777215, 85))
-        self.tabs.setFixedHeight(dpi*60)
-        
+        self.tabs.setFixedHeight(dpi * 60)
+
         font5 = self.tabs.font()
         font5.setBold(True)
-        font5.setWeight(QFont.Bold) # 75
+        font5.setWeight(QFont.Bold)  # 75
         self.tabs.setFont(font5)
         self.tab_3 = QWidget()
 
@@ -471,26 +495,23 @@ class Ui_skinWranglerDlg(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.removeUnusedBTN = QPushButton(self.tab_3)
         self.removeUnusedBTN.setObjectName(u"removeUnusedBTN")
-        self.removeUnusedBTN.setFont(font1)   # font
-
+        self.removeUnusedBTN.setFont(font1)  # font
 
         self.horizontalLayout_5.addWidget(self.removeUnusedBTN)
 
         self.clampInfBTN = QPushButton(self.tab_3)
         self.clampInfBTN.setObjectName(u"clampInfBTN")
-        self.clampInfBTN.setFont(font1)   # font
+        self.clampInfBTN.setFont(font1)  # font
 
         self.horizontalLayout_5.addWidget(self.clampInfBTN)
 
         self.clampInfSPIN = QSpinBox(self.tab_3)
         self.clampInfSPIN.setObjectName(u"clampInfSPIN")
         self.clampInfSPIN.setValue(4)
-        self.clampInfSPIN.setFont(font1)   # font
-        self.clampInfSPIN.setFixedSize(QSize(dpi*40, dpi*20))
-
+        self.clampInfSPIN.setFont(font1)  # font
+        self.clampInfSPIN.setFixedSize(QSize(dpi * 40, dpi * 20))
 
         self.horizontalLayout_5.addWidget(self.clampInfSPIN)
-
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_5)
 
@@ -499,30 +520,29 @@ class Ui_skinWranglerDlg(object):
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.addJntBTN = QPushButton(self.tab_3)
         self.addJntBTN.setObjectName(u"addJntBTN")
-        self.addJntBTN.setFont(font1)   # font
+        self.addJntBTN.setFont(font1)  # font
 
         self.horizontalLayout_7.addWidget(self.addJntBTN)
 
         self.bindPoseBTN = QPushButton(self.tab_3)
         self.bindPoseBTN.setObjectName(u"bindPoseBTN")
-        self.bindPoseBTN.setFont(font1)   # font
+        self.bindPoseBTN.setFont(font1)  # font
 
         self.horizontalLayout_7.addWidget(self.bindPoseBTN)
 
         self.selectVertsWithInfBTN = QPushButton(self.tab_3)
         self.selectVertsWithInfBTN.setObjectName(u"selectVertsWithInfBTN")
-        self.selectVertsWithInfBTN.setFont(font1)   # font
-        
+        self.selectVertsWithInfBTN.setFont(font1)  # font
+
         self.horizontalLayout_7.addWidget(self.selectVertsWithInfBTN)
 
         self.selectVertsWithInfSPIN = QSpinBox(self.tab_3)
         self.selectVertsWithInfSPIN.setObjectName(u"selectVertsWithInfSPIN")
         self.selectVertsWithInfSPIN.setValue(4)
-        self.selectVertsWithInfSPIN.setFont(font1)   # font
-        self.selectVertsWithInfSPIN.setFixedSize(QSize(dpi*60, dpi*20))
+        self.selectVertsWithInfSPIN.setFont(font1)  # font
+        self.selectVertsWithInfSPIN.setFixedSize(QSize(dpi * 60, dpi * 20))
 
         self.horizontalLayout_7.addWidget(self.selectVertsWithInfSPIN)
-
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_7)
 
@@ -553,7 +573,6 @@ class Ui_skinWranglerDlg(object):
 
         self.horizontalLayout_14.addWidget(self.avgOptionCHK)
 
-
         self.verticalLayout_7.addLayout(self.horizontalLayout_14)
 
         self.tabs.addTab(self.tab_4, "")
@@ -569,7 +588,7 @@ class Ui_skinWranglerDlg(object):
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.bButton = QPushButton(self.tab)
         self.bButton.setObjectName(u"bButton")
-        
+
         self.horizontalLayout_9.addWidget(self.bButton)
 
         self.ubButton = QPushButton(self.tab)
@@ -579,7 +598,7 @@ class Ui_skinWranglerDlg(object):
 
         self.bDeleteButton = QPushButton(self.tab)
         self.bDeleteButton.setObjectName(u"bDeleteButton")
-        
+
         self.horizontalLayout_9.addWidget(self.bDeleteButton)
 
         self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -590,7 +609,6 @@ class Ui_skinWranglerDlg(object):
         self.ubSmoothWeightsCheckbox.setObjectName(u"ubSmoothWeightsCheckbox")
 
         self.horizontalLayout_9.addWidget(self.ubSmoothWeightsCheckbox)
-
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_9)
 
@@ -611,7 +629,6 @@ class Ui_skinWranglerDlg(object):
         self.ubDeleteSkinclusterCheckbox.setChecked(True)
 
         self.horizontalLayout_11.addWidget(self.ubDeleteSkinclusterCheckbox)
-
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_11)
 
@@ -637,7 +654,6 @@ class Ui_skinWranglerDlg(object):
 
         self.horizontalLayout_12.addWidget(self.sfDirectoryButton)
 
-
         self.verticalLayout_6.addLayout(self.horizontalLayout_12)
 
         self.horizontalLayout_13 = QHBoxLayout()
@@ -647,7 +663,7 @@ class Ui_skinWranglerDlg(object):
         self.sfSaveButton.setObjectName(u"sfSaveButton")
         self.sfSaveButton.setMinimumSize(QSize(0, 0))
         self.sfSaveButton.setMaximumSize(QSize(9999, 9999))
-        
+
         self.horizontalLayout_13.addWidget(self.sfSaveButton)
 
         self.lfLoadButton = QPushButton(self.tab_2)
@@ -672,21 +688,17 @@ class Ui_skinWranglerDlg(object):
 
         self.horizontalLayout_13.addWidget(self.lfUseWorldspacePosCheckbox)
 
-
         self.verticalLayout_6.addLayout(self.horizontalLayout_13)
 
         self.tabs.addTab(self.tab_2, "")
 
         self.verticalLayout.addWidget(self.tabs)
 
-
         self.retranslateUi(skinWranglerDlg)
-
 
         self.tabs.setCurrentIndex(0)
 
         QMetaObject.connectSlotsByName(skinWranglerDlg)
-
 
     def retranslateUi(self, skinWranglerDlg):
         skinWranglerDlg.setWindowTitle(u"skinWrangler")
@@ -769,7 +781,8 @@ class Ui_skinWranglerDlg(object):
         self.ubButton.setText(u"UNBAKE")
         self.bDeleteButton.setToolTip(u"Bake skinning information on selected meshes")
         self.bDeleteButton.setText(u"CLEAR BAKING")
-        self.ubSmoothWeightsCheckbox.setToolTip(u"<html><head/><body><p>(SLOW) Smooth vertices with no influences across the mesh topology.</p><p>To be used when the mesh topology changed (eg. Mesh got smoothed)</p></body></html>")
+        self.ubSmoothWeightsCheckbox.setToolTip(
+            u"<html><head/><body><p>(SLOW) Smooth vertices with no influences across the mesh topology.</p><p>To be used when the mesh topology changed (eg. Mesh got smoothed)</p></body></html>")
         self.ubSmoothWeightsCheckbox.setText(u"Smooth")
         self.bSelectVertsButton.setToolTip(u"Select vertices that contain baked skinning information")
         self.bSelectVertsButton.setText(u"SELECT BAKED VERTS")
@@ -784,4 +797,6 @@ class Ui_skinWranglerDlg(object):
         self.lfRemapperButton.setText(u"Load->Remap")
         self.lfUseWorldspacePosCheckbox.setText(u"worldSpace")
         self.tabs.setTabText(self.tabs.indexOf(self.tab_2), u"SAVE/LOAD")
+
+
 
